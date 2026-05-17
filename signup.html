@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up — Smart Healthcare</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body class="landing-page">
+  <main class="landing">
+    <section class="landing-hero">
+      <h1>Sign Up</h1>
+      <p>Create your account.</p>
+    </section>
+
+    <section class="card">
+      <div class="form-row">
+        <input id="name" placeholder="Full name" />
+        <select id="role">
+          <option value="patient">Patient</option>
+          <option value="doctor">Doctor</option>
+          <option value="admin">Admin</option>
+        </select>
+
+        <div id="doctor-fields" style="display:none;">
+          <select id="specialization">
+            <option value="">Select specialization</option>
+            <option>Cardiology</option>
+            <option>Orthopedics</option>
+            <option>Dermatology</option>
+            <option>Neurology</option>
+            <option>Pediatrics</option>
+            <option>General Medicine</option>
+          </select>
+          <input id="available_time" placeholder="Available time (e.g., 10:00–16:00)" />
+        </div>
+
+        <input id="email" placeholder="Email" />
+        <input id="password" type="password" placeholder="Password" />
+        <button id="signup-btn">Create Account</button>
+      </div>
+      <div id="status" class="status-text"></div>
+      <p style="margin-top:10px;">Already have an account? <a href="login.html">Login</a></p>
+    </section>
+  </main>
+
+  <script>
+    const roleEl = document.getElementById('role');
+    const docFields = document.getElementById('doctor-fields');
+    roleEl.onchange = () => { docFields.style.display = roleEl.value === 'doctor' ? 'block' : 'none'; };
+
+    document.getElementById('signup-btn').onclick = async () => {
+      const name = document.getElementById('name').value.trim();
+      const role = roleEl.value;
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      const specialization = document.getElementById('specialization')?.value || '';
+      const available_time = document.getElementById('available_time')?.value || '';
+
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, role, email, password, specialization, available_time })
+      });
+      const data = await res.json();
+      if (!res.ok) return (document.getElementById('status').textContent = data.error || 'Signup failed');
+
+      if (role === 'patient') location.href = 'patient.html';
+      if (role === 'doctor') location.href = 'doctor.html';
+      if (role === 'admin')  location.href = 'admin.html';
+    };
+  </script>
+</body>
+</html>
